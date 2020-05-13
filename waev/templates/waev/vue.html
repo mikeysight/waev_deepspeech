@@ -1,0 +1,53 @@
+{%csrf_token%}
+<div id="app">
+    <div class="container">
+        <div class="large-12 medium-12 small-12 cell">
+            <label>File 
+                <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
+            </label>
+                <button @click="submitFile()">Submit</button>
+        </div>
+    </div>
+</div>
+<script src="https://unpkg.com/vue"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+<script>
+    let app = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: {
+            csrf_token: "",
+            file: "",
+            transcripts: [],
+        },
+
+        methods: {
+            handleFileUpload(){
+                this.file = this.$refs.file.files[0]
+
+            },
+            submitFile(){
+                let formData= new FormData()
+                formData.append('file', this.file)
+                axios.post('https://storage.googleapis.com/upload/storage/v1/b/waev/o?uploadType=media&name=test',
+                    formData,
+                    {
+                        headers:{
+                            'Authorization':'Bearer ya29.a0Ae4lvC1jFCVHiQSGnO5bUFc6SIhybUOpFbEjRjLrfTJICQmKg5vPFD3XvaiVuCUiIQHCRMWy0mNT8ePQbRZ9LobLqdqvYDbheHrR9zfTgHfXBurWwElcsu1vujFUzO4jsIC307pVEX8NsLA_4y9jJe9i58qZYtv1uPY',
+                            'Content-Type':'multipart/form-data',
+                            
+
+                
+                        }
+                    }
+                    ).then(function(){
+                        console.log('SUCCESS!!')
+                    }).catch(function(){
+                        console.log('FAILURE!!')
+                    })
+            },
+        }
+    })
+</script>
+
+
