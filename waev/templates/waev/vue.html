@@ -1,4 +1,5 @@
 {%csrf_token%}
+<body>
 <div id="app">
     <div class="container">
         <div class="large-12 medium-12 small-12 cell">
@@ -19,6 +20,7 @@
             csrf_token: "",
             file: "",
             transcripts: [],
+            token: ""
         },
 
         methods: {
@@ -27,13 +29,37 @@
 
             },
             submitFile(){
+                let fragmentString=location.hash.substring(1)
+                console.log(fragmentString)
+                console.log(fragmentString.split())
+                let params= {}
+                let regex = /([^&=]+)=([^&]*)/g, m
+                while (m = regex.exec(fragmentString)){
+                    params[decodeURIComponent(m[1])] = decodeURIComponent(m[2])
+                }
+                while (m)
+                
                 let formData= new FormData()
                 formData.append('file', this.file)
+                axios({
+                    method: 'get',
+                    url: 'https://accounts.google.com/o/oauth2/v2/auth',
+                    params: {
+                        'client_id': '256367319535-unavpckcnc84hirnqckamb883cog7k14.apps.googleusercontent.com',
+                        'redirect_uri': 'http://localhost:8000',
+                        'response_type': 'token',
+                        'scope': 'https://www.googleapis.com/auth/cloud-platform',
+                        'include_granted_scopes': 'true',
+                        'state': 'pass-through value'
+
+                    }
+    
+                }).then(response=>console.log(response.data))
                 axios.post('https://storage.googleapis.com/upload/storage/v1/b/waev/o?uploadType=media&name=test',
                     formData,
                     {
                         headers:{
-                            'Authorization':'Bearer ya29.a0Ae4lvC1jFCVHiQSGnO5bUFc6SIhybUOpFbEjRjLrfTJICQmKg5vPFD3XvaiVuCUiIQHCRMWy0mNT8ePQbRZ9LobLqdqvYDbheHrR9zfTgHfXBurWwElcsu1vujFUzO4jsIC307pVEX8NsLA_4y9jJe9i58qZYtv1uPY',
+                            'Authorization':`Bearer ${this.token} `,
                             'Content-Type':'multipart/form-data',
                             
 
@@ -46,7 +72,38 @@
                         console.log('FAILURE!!')
                     })
             },
-        }
+            getAuth: function(){
+                var oauth2Endpoint = 'https://accounts.google.com/o/oauth2/v2/auth';
+
+                // Create <form> element to submit parameters to OAuth 2.0 endpoint.
+                var form = document.createElement('form');
+                form.setAttribute('method', 'GET'); // Send as a GET request.
+                form.setAttribute('action', oauth2Endpoint);
+
+                // Parameters to pass to OAuth 2.0 endpoint.
+                var params = {
+                    'client_id': '256367319535-unavpckcnc84hirnqckamb883cog7k14.apps.googleusercontent.com',
+                    'redirect_uri': 'http://localhost:8000',
+                    'response_type': 'token',
+                    'scope': 'https://www.googleapis.com/auth/cloud-platform',
+                    'include_granted_scopes': 'true',
+                    'state': 'pass-through value'
+                };
+
+                // Add form parameters as hidden input values.
+                for (var p in params) {
+                    var input = document.createElement('input');
+                    input.setAttribute('type', 'hidden');
+                    input.setAttribute('name', p);
+                    input.setAttribute('value', params[p]);
+                    form.appendChild(input);
+                }
+
+                // Add form to page and submit it to open the OAuth 2.0 endpoint.
+                document.body.appendChild(form);
+                form.submit();
+            }
+        },
     })
 </script>
 
