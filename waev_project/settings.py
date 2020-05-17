@@ -127,11 +127,13 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-# CORS_ORIGIN_ALLOW_ALL=True
-# CORS_ORIGIN_WHITELIST=('http://localhost:8000', 'http://127.0.0.1:8000')  
+CORS_ORIGIN_ALLOW_ALL=True
+CORS_ORIGIN_WHITELIST=('http://localhost:8000', 'http://127.0.0.1:8000')  
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.AllowAny',
     ]
 }
+
+MEDIA_ROOT= "/Users/michael/waev/secrets/media/"

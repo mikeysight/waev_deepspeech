@@ -1,7 +1,7 @@
 from google.cloud import storage
 
 
-def upload_blob(bucket_name, source_file_name, destination_blob_name):
+def upload_blob('waev', ):
     """Uploads a file to the bucket."""
     # bucket_name = "your-bucket-name"
     # source_file_name = "local/path/to/file"
@@ -19,4 +19,7 @@ def upload_blob(bucket_name, source_file_name, destination_blob_name):
         )
     )
 
-upload_blob('waev', 'test/c_and_p_01.mp3', 'c_and_p_01.mp3')
+filename="c_and_p_01.mp3"    
+audio=f"/Users/michael/waev/secrets/media/{filename}"
+upload_blob('waev', audio , 'test')
+
