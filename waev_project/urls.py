@@ -24,5 +24,6 @@ urlpatterns = [
     path('api/v1/', include('api.urls')),
     path('api-auth/', include('rest_framework.urls')),
     path('upload/', waev_views.upload, name='upload'),
+    path('transcribe/', waev_views.transcribe, name='transcribe'),
 
 ]

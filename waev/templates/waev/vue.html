@@ -9,6 +9,9 @@
                 <button @click="submitFile()">Submit</button>
         </div>
     </div>
+    <div v-show="this.transcript">
+        <a v-for="word in this.transcript">[[word.text]] </a>
+    </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
@@ -21,7 +24,7 @@
             user: "",
             file: "",
             filename: "",
-            transcripts: [],
+            transcript: null
         },
 
         methods: {
@@ -48,19 +51,27 @@
                         console.log('SUCCESS!!')
                     }).catch(function(){
                         console.log('FAILURE!!')
-                    })
-                let formData2= new FormData()
-                formData2.append(
-                    "filename", this.filename)
-                axios({
-                    method: 'post',
-                    url:'http://localhost:8000/upload/',
-                    data: formData2,               
-                    headers:{
-                        'X-CSRFToken': this.csrf_token
-                    },
+                    }).then(
+                        axios({
+                            method: 'post',
+                            url:'http://localhost:8000/upload/',
+                            data: {"filename": this.filename},               
+                            headers:{
+                                'X-CSRFToken': this.csrf_token
+                            },
 
-                }).then(response => console.log(response))
+                        }).then(
+                            axios({
+                                method: 'post',
+                                url:'http://localhost:8000/transcribe/',
+                                data: {"filename": this.filename},               
+                                headers:{
+                                    'X-CSRFToken': this.csrf_token
+                                },
+                            }).then(response => this.transcript=response.data)
+                        )
+                    )
+
             }
         },
         mounted: function(){
