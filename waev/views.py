@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from google.cloud import storage
 from google.cloud import speech_v1
 from google.cloud.speech_v1 import enums
+from .models import AudioFile
 import json
 
 def upload(request):
@@ -21,6 +22,8 @@ def upload(request):
 def transcribe(request):
     data=json.loads(request.body)
     filename= data.get('filename')
+    file_id= data.get('id')
+    print(file_id)
 
     client = speech_v1.SpeechClient()
     sample_rate_hertz = 16000
@@ -36,9 +39,9 @@ def transcribe(request):
     audio = {"uri": storage_uri}
     operation = client.long_running_recognize(config, audio)
 
-    print(u"Waiting for operation to complete...")
+    # print(u"Waiting for operation to complete...")
     response = operation.result()
-    print(response)
+    # print(response)
     
     transcription_response=[]
 
@@ -46,11 +49,15 @@ def transcribe(request):
         alternative = result.alternatives[0]
         for word in alternative.words:
             word_dict = {'text': f"{word.word}", 'timestamp': f"{word.start_time.seconds}:{word.start_time.nanos}"}
-            print(word_dict)
+            # print(word_dict)
             transcription_response.append(word_dict)
-    print(transcription_response)
+    # print(transcription_response)
     transcript_json = json.dumps(transcription_response)
-    print(transcript_json)
+    # print(transcript_json)
+    audiofile=AudioFile.objects.get(id=file_id)
+    audiofile.transcript=transcript_json
+    audiofile.save()
+
 
     return HttpResponse(transcript_json)
 

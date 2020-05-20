@@ -10,8 +10,15 @@
         </div>
     </div>
     <div v-show="this.transcript">
-        <a v-for="word in this.transcript">[[word.text]] </a>
-    </div>
+        <span v-for="word in this.transcript">
+            <a v-if="!editWord" @mouseover="hoverTimecode=word.timestamp" @click="toggleEdit">[[word.text]] </a>
+            <a v-else="editWord" v-on:keyup.enter="toggleEdit"><input v-model="word.text" v-on:keyup.enter="toggleEdit" :size="word.text.length===1 ? word.text.length:word.text.length-1"></a>
+        </span>
+        <button @click="updateTranscript()">Save</button>
+        <div>
+            [[this.hoverTimecode]]
+        </div>
+    </div>    
 </div>
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
@@ -24,7 +31,10 @@
             user: "",
             file: "",
             filename: "",
-            transcript: null
+            transcript: null,
+            id: "",
+            editWord: false,
+            hoverTimecode: null
         },
 
         methods: {
@@ -47,11 +57,9 @@
                             'Content-Type':'multipart/form-data',
                             'X-CSRFToken': this.csrf_token
                         }
-                    }).then(function(){
-                        console.log('SUCCESS!!')
-                    }).catch(function(){
-                        console.log('FAILURE!!')
-                    }).then(
+                    }).then(response=>{
+                        console.log(response.data)
+                        this.id = response.data.id
                         axios({
                             method: 'post',
                             url:'http://localhost:8000/upload/',
@@ -64,19 +72,42 @@
                             axios({
                                 method: 'post',
                                 url:'http://localhost:8000/transcribe/',
-                                data: {"filename": this.filename},               
+                                data: {"filename": this.filename,
+                                "id": this.id},               
                                 headers:{
                                     'X-CSRFToken': this.csrf_token
                                 },
                             }).then(response => this.transcript=response.data)
                         )
-                    )
+                    })
 
+            },
+            updateTranscript(){
+                axios({
+                    method: 'patch',
+                    url: `/api/v1/${this.id}/`,
+                    data: {'transcript': JSON.stringify(this.transcript)},
+                    headers:{'X-CSRFToken':this.csrf_token}
+                }).then(function(){
+                    console.log("Success!")
+                }).catch(function(){
+                    console.log("Failure")
+                })
+            },
+            toggleEdit(){
+                this.editWord=this.editWord ? false:true
             }
         },
         mounted: function(){
             this.csrf_token=document.querySelector("input[name=csrfmiddlewaretoken]").value
 
+        },
+        created:function(){
+            window.addEventListener('keyup', event =>{
+                if (this.editWord && event.key === 'Enter'){
+                    this.toggleEdit()
+                }
+            })
         }
     })
 </script>
