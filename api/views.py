@@ -1,15 +1,31 @@
-from rest_framework import generics
-
+from rest_framework import generics, viewsets, permissions
+from django.contrib.auth.models import User
+from django.http import HttpResponse
 from waev.models import AudioFile
 from .permissions import IsAuthorOrReadOnly
-from .serializers import AudioFileSerializer
+from .serializers import AudioFileSerializer, UserSerializer
 
-class AudioFileList(generics.ListCreateAPIView):
-    queryset = AudioFile.objects.all()
-    serializer_class = AudioFileSerializer
+# class AudioFileList(generics.ListCreateAPIView):
+#     queryset = AudioFile.objects.all()
+#     serializer_class = AudioFileSerializer
 
-class AudioFileDetail(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = (IsAuthorOrReadOnly,)
-    queryset = AudioFile.objects.all()
+# class AudioFileDetail(generics.RetrieveUpdateDestroyAPIView):
+#     permission_classes = (IsAuthorOrReadOnly,)
+#     queryset = AudioFile.objects.all()
+#     serializer_class = AudioFileSerializer
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset=User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
+
+class AudioFileViewSet(viewsets.ModelViewSet):
+    queryset=AudioFile.objects.all()
     serializer_class = AudioFileSerializer
+    permission_classes = [IsAuthorOrReadOnly]
+
+
+
+
+
 

@@ -1,0 +1,19 @@
+.third{
+    border: 1px solid black;
+}
+
+body{
+    background-color: #dae1e7;
+}
+
+#transcript{
+    height: 100vh;
+}
+
+#waevlist{
+    height: 70vh
+}
+
+#upload{
+    height: 30vh
+}

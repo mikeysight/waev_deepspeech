@@ -1,115 +1,160 @@
 {%csrf_token%}
-<body>
-<div id="app">
-    <div class="container">
-        <div class="large-12 medium-12 small-12 cell">
-            <label>File 
-                <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
-            </label>
-                <button @click="submitFile()">Submit</button>
+{%load static%}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>waev</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <link rel='stylesheet' type='text/css' href="{%static 'waev/main.css'%}">
+    </head>
+
+    <body>
+    <div id="app">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-8 third" id="transcript">
+                    <span v-for="word in this.transcript">
+                        <a v-if="!editWord" @mouseover="hoverTimecode=word.timestamp" @click="toggleEdit">[[word.text]] </a>
+                        <a v-else="editWord" v-on:keyup.enter="toggleEdit"><input v-model="word.text" v-on:keyup.enter="toggleEdit" :size="word.text.length===1 ? word.text.length:word.text.length-1"></a>
+                    </span>
+                    <div>
+                        [[this.hoverTimecode]]
+                    </div>
+                </div>
+                <div class="col-4">
+                    <div class="third" id="waevlist">
+                        <div v-for="waev in userWaevs">
+                            <div v-if="waev.transcript">
+                                <p @click="selectWaev(waev)">[[waev.filename]]<button @click="updateTranscript(waev)">Save</button>
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="row third" id="upload">
+                        <h1>new waev</h1>
+                        <div class="large-12 medium-12 small-12 cell">
+                            <label>File 
+                                <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
+                            </label>
+                            <button @click="submitFile()">Submit</button>
+                        </div>
+            </div>
+
+
+
+                </div>
+            </div>  
+        </div>  
         </div>
     </div>
-    <div v-show="this.transcript">
-        <span v-for="word in this.transcript">
-            <a v-if="!editWord" @mouseover="hoverTimecode=word.timestamp" @click="toggleEdit">[[word.text]] </a>
-            <a v-else="editWord" v-on:keyup.enter="toggleEdit"><input v-model="word.text" v-on:keyup.enter="toggleEdit" :size="word.text.length===1 ? word.text.length:word.text.length-1"></a>
-        </span>
-        <button @click="updateTranscript()">Save</button>
-        <div>
-            [[this.hoverTimecode]]
-        </div>
-    </div>    
-</div>
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
-<script>
-    let app = new Vue({
-        el: '#app',
-        delimiters: ['[[', ']]'],
-        data: {
-            csrf_token: "",
-            user: "",
-            file: "",
-            filename: "",
-            transcript: null,
-            id: "",
-            editWord: false,
-            hoverTimecode: null
-        },
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+        <script>
+            let app = new Vue({
+                el: '#app',
+                delimiters: ['[[', ']]'],
+                data: {
+                    csrf_token: "",
+                    user: "",
+                    file: "",
+                    filename: "",
+                    transcript: null,
+                    userWaevs: null,
+                    id: "",
+                    editWord: false,
+                    hoverTimecode: null
+                },
 
-        methods: {
-            handleFileUpload(){
-                console.log(this.$refs.file.files)
-                this.file = this.$refs.file.files[0]
-                this.filename=this.$refs.file.files[0].name
-            },
-            submitFile(){
-                let formData= new FormData()
-                formData.append(
-                    'audio', this.file)
-                formData.append('user', 1)
-                formData.append('filename', this.filename)
-                console.log(formData)
-                axios.post('/api/v1/',
-                    formData,
-                    {
-                        headers:{
-                            'Content-Type':'multipart/form-data',
-                            'X-CSRFToken': this.csrf_token
-                        }
-                    }).then(response=>{
-                        console.log(response.data)
-                        this.id = response.data.id
-                        axios({
-                            method: 'post',
-                            url:'http://localhost:8000/upload/',
-                            data: {"filename": this.filename},               
-                            headers:{
-                                'X-CSRFToken': this.csrf_token
-                            },
+                methods: {
+                    selectWaev(waev){
+                        this.transcript=JSON.parse(waev.transcript)
 
-                        }).then(
-                            axios({
-                                method: 'post',
-                                url:'http://localhost:8000/transcribe/',
-                                data: {"filename": this.filename,
-                                "id": this.id},               
+                    },
+                    handleFileUpload(){
+                        console.log(this.$refs.file.files)
+                        this.file = this.$refs.file.files[0]
+                        this.filename=this.$refs.file.files[0].name
+                    },
+                    submitFile(){
+                        let formData= new FormData()
+                        formData.append(
+                            'audio', this.file)
+                        formData.append('user', 1)
+                        formData.append('filename', this.filename)
+                        console.log(formData)
+                        axios.post('/api/v1/waevs/',
+                            formData,
+                            {
                                 headers:{
+                                    'Content-Type':'multipart/form-data',
                                     'X-CSRFToken': this.csrf_token
-                                },
-                            }).then(response => this.transcript=response.data)
-                        )
+                                }
+                            }).then(response=>{
+                                console.log(response.data)
+                                this.id = response.data.id
+                                axios({
+                                    method: 'post',
+                                    url:'http://localhost:8000/upload/',
+                                    data: {"filename": this.filename},               
+                                    headers:{
+                                        'X-CSRFToken': this.csrf_token
+                                    },
+
+                                }).then(
+                                    axios({
+                                        method: 'post',
+                                        url:'http://localhost:8000/transcribe/',
+                                        data: {"filename": this.filename,
+                                        "id": this.id},               
+                                        headers:{
+                                            'X-CSRFToken': this.csrf_token
+                                        },
+                                    }).then(response => this.transcript=response.data)
+                                )
+                            })
+
+                    },
+                    updateTranscript(waev){
+                        axios({
+                            method: 'patch',
+                            url: `/api/v1/waevs/${this.id}/`,
+                            data: {'transcript': JSON.stringify(this.transcript)},
+                            headers:{'X-CSRFToken':this.csrf_token}
+                        }).then(function(){
+                            console.log("Success!")
+                        }).catch(function(){
+                            console.log("Failure")
+                        })
+                    },
+                    toggleEdit(){
+                        this.editWord=this.editWord ? false:true
+                    }
+                },
+                mounted: function(){
+                    this.csrf_token=document.querySelector("input[name=csrfmiddlewaretoken]").value
+                    axios({
+                        method:"get",
+                        url: '/current/',
+                    }).then(response => {
+                        this.user = response.data
+                        axios({
+                            method:"get",
+                            url: `/api/v1/users/${this.user.id}/`
+                        }).then(response => this.userWaevs= response.data.audiofile_set)
                     })
 
-            },
-            updateTranscript(){
-                axios({
-                    method: 'patch',
-                    url: `/api/v1/${this.id}/`,
-                    data: {'transcript': JSON.stringify(this.transcript)},
-                    headers:{'X-CSRFToken':this.csrf_token}
-                }).then(function(){
-                    console.log("Success!")
-                }).catch(function(){
-                    console.log("Failure")
-                })
-            },
-            toggleEdit(){
-                this.editWord=this.editWord ? false:true
-            }
-        },
-        mounted: function(){
-            this.csrf_token=document.querySelector("input[name=csrfmiddlewaretoken]").value
-
-        },
-        created:function(){
-            window.addEventListener('keyup', event =>{
-                if (this.editWord && event.key === 'Enter'){
-                    this.toggleEdit()
+                },
+                created:function(){
+                    window.addEventListener('keyup', event =>{
+                        if (this.editWord && event.key === 'Enter'){
+                            this.toggleEdit()
+                        }
+                    })
                 }
             })
-        }
-    })
-</script>
+        </script>
+    </body>
+</html>
 
 

@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
 from waev import views as waev_views
+from users import views as user_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,5 +26,6 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('upload/', waev_views.upload, name='upload'),
     path('transcribe/', waev_views.transcribe, name='transcribe'),
+    path('current/', user_views.current_user, name="current")
 
 ]
