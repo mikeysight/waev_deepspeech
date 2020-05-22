@@ -13,7 +13,7 @@ class AudioFileSerializer(serializers.ModelSerializer):
             'user',
         )
 class UserSerializer(serializers.ModelSerializer):
-    audiofile_set=AudioFileSerializer(read_only=True, many=True)
+    audiofile_set=serializers.SerializerMethodField()
     class Meta:
         fields=(
             'id',
@@ -21,3 +21,6 @@ class UserSerializer(serializers.ModelSerializer):
             'audiofile_set'
         )
         model = User
+    def get_audiofile_set(self, instance):
+        waevs=instance.audiofile_set.all().order_by('-date_modified')
+        return AudioFileSerializer(waevs, many=True).data

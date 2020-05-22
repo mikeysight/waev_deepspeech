@@ -15,23 +15,26 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-8 third" id="transcript">
-                    <span v-for="word in this.transcript">
+                    <span v-for="word in this.selectedWaev.transcript">
                         <a v-if="!editWord" @mouseover="hoverTimecode=word.timestamp" @click="toggleEdit">[[word.text]] </a>
                         <a v-else="editWord" v-on:keyup.enter="toggleEdit"><input v-model="word.text" v-on:keyup.enter="toggleEdit" :size="word.text.length===1 ? word.text.length:word.text.length-1"></a>
                     </span>
-                    <div>
-                        [[this.hoverTimecode]]
-                    </div>
                 </div>
-                <div class="col-4">
-                    <div class="third" id="waevlist">
+                <div class="col-4 third">
+                    <div id="waevlist">
                         <div v-for="waev in userWaevs">
                             <div v-if="waev.transcript">
-                                <p @click="selectWaev(waev)">[[waev.filename]]<button @click="updateTranscript(waev)">Save</button>
+                                <p @click="selectWaev(waev)">[[waev.filename]] [[waev.id]]<button @click="updateTranscript">Save</button>
                             </div>
                         </div> 
                     </div>
-                    <div class="row third" id="upload">
+                    <div class="third row">
+                        <div id="timecode">
+                            <h3>timecode</h3>
+                            [[this.hoverTimecode]]
+                        </div>
+                    </div>
+                    <div class="third row" id="upload">
                         <h1>new waev</h1>
                         <div class="large-12 medium-12 small-12 cell">
                             <label>File 
@@ -39,14 +42,10 @@
                             </label>
                             <button @click="submitFile()">Submit</button>
                         </div>
-            </div>
-
-
-
+                    </div>
                 </div>
             </div>  
         </div>  
-        </div>
     </div>
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
@@ -59,17 +58,29 @@
                     user: "",
                     file: "",
                     filename: "",
-                    transcript: null,
-                    userWaevs: null,
-                    id: "",
+                    selectedWaev: {
+                        'audio': null,
+                        'filename': null,
+                        'id': null,
+                        'transcript': null,
+                        'user':null,
+                    },
+                    newWaev:{
+                        'file': null,
+                        'filename': null,
+                        'project_name':null,
+                    },
+                    userWaevs: {},
                     editWord: false,
-                    hoverTimecode: null
+                    hoverTimecode: "00:000000000"
                 },
 
                 methods: {
                     selectWaev(waev){
-                        this.transcript=JSON.parse(waev.transcript)
-
+                        if(this.selectedWaev !== waev){
+                            this.selectedWaev=waev
+                            this.selectedWaev.transcript=JSON.parse(waev.transcript)
+                        }
                     },
                     handleFileUpload(){
                         console.log(this.$refs.file.files)
@@ -115,25 +126,29 @@
                             })
 
                     },
-                    updateTranscript(waev){
+                    updateTranscript(){
                         axios({
                             method: 'patch',
-                            url: `/api/v1/waevs/${this.id}/`,
-                            data: {'transcript': JSON.stringify(this.transcript)},
+                            url: `/api/v1/waevs/${this.selectedWaev.id}/`,
+                            data: {'transcript': JSON.stringify(this.selectedWaev.transcript)},
                             headers:{'X-CSRFToken':this.csrf_token}
-                        }).then(function(){
+                        }).then(response=>{
                             console.log("Success!")
+                            console.log(response.data)
+                            this.reloadWaevs()
+                            this.selectedWaev=response.data
+                            this.selectedWaev.transcript=JSON.parse(response.data.transcript)
                         }).catch(function(){
                             console.log("Failure")
                         })
+                        
+            
                     },
                     toggleEdit(){
                         this.editWord=this.editWord ? false:true
-                    }
-                },
-                mounted: function(){
-                    this.csrf_token=document.querySelector("input[name=csrfmiddlewaretoken]").value
-                    axios({
+                    },
+                    reloadWaevs(){
+                        axios({
                         method:"get",
                         url: '/current/',
                     }).then(response => {
@@ -141,13 +156,24 @@
                         axios({
                             method:"get",
                             url: `/api/v1/users/${this.user.id}/`
-                        }).then(response => this.userWaevs= response.data.audiofile_set)
+                        }).then(response => {
+                            this.userWaevs= response.data.audiofile_set
+                            this.selectedWaev=this.userWaevs[0]
+                            this.selectedWaev.transcript=JSON.parse(this.userWaevs[0].transcript)
+                        })
                     })
+                    }
+                },
+                mounted: function(){
+                    this.csrf_token=document.querySelector("input[name=csrfmiddlewaretoken]").value
+                    this.reloadWaevs()
 
                 },
                 created:function(){
                     window.addEventListener('keyup', event =>{
                         if (this.editWord && event.key === 'Enter'){
+                            this.updateTranscript();
+                            console.log('success')
                             this.toggleEdit()
                         }
                     })

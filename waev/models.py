@@ -6,6 +6,9 @@ class AudioFile(models.Model):
     audio = models.FileField()
     transcript = models.TextField(null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    date_modified=models.DateTimeField(auto_now=True)
+    date_created=models.DateTimeField(auto_now_add=True)
+
 
     def __str__(self):
         return self.filename
