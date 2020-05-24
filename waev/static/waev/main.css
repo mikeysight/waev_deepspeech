@@ -1,17 +1,23 @@
 .third{
-    border: 1px solid black;
+    border: 1px solid#dae1e7;
 }
 
-body{
-    background-color: #dae1e7;
+.brand{
+    font-family: 'Righteous', cursive;
+    font-size: 3em;
+    margin:auto
+
 }
+
 
 #transcript{
     height: 100vh;
+    padding-top:20px
 }
 
 #waevlist{
-    height: 70vh
+    height: 70vh;
+    padding-top:20px;
 }
 
 #upload{
