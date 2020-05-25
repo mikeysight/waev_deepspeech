@@ -1,6 +1,6 @@
-.third{
+/* .third{
     border: 1px solid#dae1e7;
-}
+} */
 
 .brand{
     font-family: 'Righteous', cursive;
@@ -9,17 +9,21 @@
 
 }
 
+#timecode{
+    padding-top: 10px;
+}
 
 #transcript{
+    border: 1px solid#dae1e7;
     height: 100vh;
     padding-top:20px
 }
 
-#waevlist{
-    height: 70vh;
-    padding-top:20px;
+#upload{
+    height: 50vh
 }
 
-#upload{
-    height: 30vh
+#waevlist{
+    height: 50vh;
+    padding-top:20px;
 }

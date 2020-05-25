@@ -5,6 +5,7 @@ from google.cloud import speech_v1
 from google.cloud.speech_v1 import enums
 from .models import AudioFile
 import json
+import sox
 
 def upload(request):
     data = json.loads(request.body)
@@ -12,10 +13,14 @@ def upload(request):
 
     storage_client = storage.Client()
     bucket = storage_client.bucket('waev')
-    blob = bucket.blob(filename)
+    blob = bucket.blob(filename+'.flac')
 
     audio=f"/Users/michael/waev/secrets/media/{filename}"
-    blob.upload_from_filename(audio)
+    tfm=sox.Transformer()
+    tfm.convert(samplerate=16000, n_channels=1)
+    new_audio=audio+'.flac'
+    audio=tfm.build(audio, new_audio)
+    blob.upload_from_filename(new_audio)
 
     return HttpResponse()
 
@@ -35,7 +40,7 @@ def transcribe(request):
         "encoding": "FLAC",
         "enable_word_time_offsets": True,
     }
-    storage_uri=f"gs://waev/{filename}"
+    storage_uri=f"gs://waev/{filename}.flac"
     audio = {"uri": storage_uri}
     operation = client.long_running_recognize(config, audio)
 
