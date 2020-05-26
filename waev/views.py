@@ -21,6 +21,7 @@ def upload(request):
     new_audio=audio+'.flac'
     audio=tfm.build(audio, new_audio)
     blob.upload_from_filename(new_audio)
+    print("file uploaded!")
 
     return HttpResponse()
 
