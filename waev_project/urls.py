@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+from django.contrib.auth import views as auth_views
 from waev import views as waev_views
 from users import views as user_views
 
@@ -26,6 +27,9 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('upload/', waev_views.upload, name='upload'),
     path('transcribe/', waev_views.transcribe, name='transcribe'),
-    path('current/', user_views.current_user, name="current")
+    path('current/', user_views.current_user, name="current"),
+    path('login/', auth_views.LoginView.as_view(template_name="waev/login.html"), name="login"),
+    path('logout/', auth_views.LogoutView.as_view(template_name='waev/logout.html'), name='logout'),
+    path('register/', user_views.register, name='register'),
 
 ]

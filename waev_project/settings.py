@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'api.apps.ApiConfig',
 
     'rest_framework',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -137,3 +138,7 @@ REST_FRAMEWORK = {
 }
 
 MEDIA_ROOT= "/Users/michael/waev/secrets/media/"
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+LOGIN_REDIRECT_URL = 'http://localhost:8000/'

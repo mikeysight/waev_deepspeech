@@ -8,19 +8,31 @@
     margin:auto
 
 }
+.my-container{
+    max-width: 50%;
+    margin:70px auto;
+}
 
 #timecode{
-    padding-top: 10px;
+    padding-top: 15px;
+    height:10vh;
 }
 
 #transcript{
     border: 1px solid#dae1e7;
-    height: 100vh;
-    padding-top:20px
+    height: 90vh;
+    padding-top:20px;
+
 }
 
 #upload{
-    height: 50vh
+    height: 30vh;
+    padding-top:50px;
+
+}
+
+#upload-content{
+    margin: 0px auto
 }
 
 #waevlist{
