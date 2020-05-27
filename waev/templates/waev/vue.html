@@ -22,7 +22,7 @@
                         <h3>waevs</h3>
                             <div v-for="waev in userWaevs">
                                 <div v-if="waev.transcript">
-                                    <p @click="selectWaev(waev)">[[waev.filename]] [[waev.id]]<button @click="updateTranscript">Save</button>
+                                    <p @click="selectWaev(waev)">[[waev.filename]] [[waev.id]]<button @click="removeWaev(waev)" type="button" class="btn btn-primary btn-sm">Delete</button>
                                 </div>
                             </div> 
                     </div>
@@ -33,6 +33,9 @@
                                 <label>File 
                                     <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>
                                 </label>
+                                <br>
+                                <progress max="100" :value.prop="uploadPercentage"></progress>
+                                <br>
                                 <button @click="submitFile()">Submit</button>
                             </div>
                         </div>
@@ -62,6 +65,7 @@
                         'transcript': null,
                         'user':null,
                     },
+                    uploadPercentage: 0,
                     user:"",
                     userWaevs: {},
                     editWord: false,
@@ -75,6 +79,19 @@
                             this.selectedWaev.transcript=JSON.parse(waev.transcript)
                             
                         }
+                    },
+                    removeWaev(waev){
+                        axios({
+                            method: 'delete',
+                            url: `/api/v1/waevs/${waev.id}/`,
+                            headers:{'X-CSRFToken':this.csrf_token}
+                        }).then(response=>{
+                            console.log("Success!")
+                            this.reloadWaevs()
+                        })
+
+
+
                     },
                     handleFileUpload(){
                         console.log(this.$refs.file.files)
@@ -91,30 +108,41 @@
                         axios.post('/api/v1/waevs/',
                             formData,
                             {
+                                {% comment %} onUploadProgress: function(progressEvent){
+                                        console.log(progressEvent.loaded)
+                                        this.uploadPercentage = parseInt(Math.round((progressEvent.loaded/progressEvent.total)* 100))
+                                        }.bind(this), {% endcomment %}
+                                
                                 headers:{
                                     'Content-Type':'multipart/form-data',
                                     'X-CSRFToken': this.csrf_token
-                                }
+                                },                               
                             }).then(response=>{
                                 console.log(response.data)
                                 this.newWaev.id = response.data.id
                                 axios({
                                     method: 'post',
                                     url:'http://localhost:8000/upload/',
-                                    data: {"filename": this.newWaev.filename},               
+                                    data: {"filename": this.newWaev.filename},
                                     headers:{
-                                        'X-CSRFToken': this.csrf_token
-                                    },
-
+                                            'X-CSRFToken': this.csrf_token
+                                        },    
+                                    onUploadProgress: function(progressEvent){
+                                        console.log(progressEvent.loaded)
+                                        this.uploadPercentage = parseInt(Math.round((progressEvent.loaded/progressEvent.total)* 100))
+                                        }.bind(this)
                                 }).then(response =>{
                                     axios({
                                         method: 'post',
                                         url:'http://localhost:8000/transcribe/',
                                         data: {"filename": this.newWaev.filename,
-                                        "id": this.newWaev.id},               
+                                        "id": this.newWaev.id},
                                         headers:{
                                             'X-CSRFToken': this.csrf_token
                                         },
+                                        onUploadProgress: function(progressEvent){
+                                                this.uploadPercentage = parseInt(Math.round((progressEvent.loaded/progressEvent.total)* 100))
+                                                }.bind(this)            
                                     }).then(response => {
                                         this.transcript=response.data
                                         this.reloadWaevs()
