@@ -13,10 +13,35 @@
     margin:160px auto;
 }
 
+.active{
+    background-color:#dae1e7 ;
+}
+
+.submit{
+    background-color:#142850;
+}
+
+.waev{
+    font-weight: bolder;
+    margin-bottom:0px;
+    padding:10px
+}
+
+#waevlist h3{
+    padding-left:10px
+}
+
+#dashboard{
+    padding: 0px;
+}
+
 #timecode{
     padding-top: 15px;
     height:10vh;
     margin-top: 90px;
+    padding-left:10px;
+    padding-bottom:10px;
+    border-bottom: 1px solid#dae1e7
 }
 
 #transcript{
@@ -29,8 +54,9 @@
 }
 
 #upload{
-    height: 30vh;
-    padding-top:50px;
+    height: 25vh;
+    padding:10px;
+    border-bottom: 1px solid#dae1e7
 
 }
 
@@ -39,7 +65,8 @@
 }
 
 #waevlist{
-    height: 50vh;
-    padding-top:20px;
+    height: 55vh;
+    padding-top:10px;
     overflow:scroll;
+    border-bottom: 1px solid#dae1e7
 }

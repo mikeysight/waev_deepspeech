@@ -54,7 +54,7 @@ def transcribe(request):
     for result in response.results:
         alternative = result.alternatives[0]
         for word in alternative.words:
-            word_dict = {'text': f"{word.word}", 'timestamp': f"{word.start_time.seconds}:{word.start_time.nanos}"}
+            word_dict = {'text': f"{word.word}", 'timestamp': f"{word.start_time.seconds}"}
             # print(word_dict)
             transcription_response.append(word_dict)
     # print(transcription_response)

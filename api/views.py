@@ -17,12 +17,12 @@ from .serializers import AudioFileSerializer, UserSerializer
 class UserViewSet(viewsets.ModelViewSet):
     queryset=User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    # permission_classes = [IsAuthorOrReadOnly]
 
 class AudioFileViewSet(viewsets.ModelViewSet):
     queryset=AudioFile.objects.all()
     serializer_class = AudioFileSerializer
-    permission_classes = [IsAuthorOrReadOnly]
+    # permission_classes = [IsAuthorOrReadOnly]
 
 
 

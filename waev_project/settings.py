@@ -142,3 +142,5 @@ MEDIA_ROOT= "/Users/michael/waev/secrets/media/"
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'http://localhost:8000/'
+
+LOGIN_URL = 'login'
