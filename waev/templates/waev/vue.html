@@ -22,7 +22,7 @@
                         <h3>waevs</h3>
                             <div v-for="waev in userWaevs">
                                 <div v-if="waev.transcript">
-                                    <div class="static" v-bind:class="{active: waev.id===selectedWaev.id}">
+                                    <div class="static" v-bind:class="{activevue: waev.id===selectedWaev.id}">
                                     <p class="waev" @click="selectWaev(waev)">[[waev.filename]] <button @click="removeWaev(waev)">&#xd7</button>
                                     </div>
                                 </div>

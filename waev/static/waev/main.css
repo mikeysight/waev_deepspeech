@@ -13,8 +13,15 @@
     margin:160px auto;
 }
 
-.active{
+.activevue{
     background-color:#dae1e7 ;
+}
+
+.my-toggler{
+    position:absolute;
+    right:30px;
+    top:30px;
+    
 }
 
 .submit{
@@ -46,7 +53,7 @@
 
 #transcript{
     border: 1px solid#dae1e7;
-    height: 90vh;
+    height: 91vh;
     padding-top:20px;
     overflow:scroll;
     margin-top:90px;
@@ -62,10 +69,11 @@
 
 #upload-content{
     margin: 0px auto
+    
 }
 
 #waevlist{
-    height: 55vh;
+    height: 56vh;
     padding-top:10px;
     overflow:scroll;
     border-bottom: 1px solid#dae1e7
