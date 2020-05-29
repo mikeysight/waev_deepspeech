@@ -4,20 +4,23 @@
     {%block content%}
     <div id='app'>
         <div class="container-fluid">
+        {% comment %} transcript {% endcomment %}
             <div class="row">
                 <div class="col-8 third" id="transcript">
                     <span v-for="word in this.selectedWaev.transcript">
                         <a v-if="!word.editWord" @mouseover="hoverTimecode=word.timestamp" @click="toggleWordEdit(word)">[[word.text]] </a>
-                        <a v-else="word.editWord" v-on:keyup.enter="toggleEdit"><input v-model="word.text" v-on:keyup.enter="toggleEdit" :size="word.text.length===1 ? word.text.length:word.text.length-1"></a>
+                        <a v-else="word.editWord" v-on:keyup.enter="toggleEdit"><input class="word-input" v-model="word.text" v-on:keyup.enter="toggleEdit" :size="word.text.length===1 ? word.text.length:word.text.length-1"></a>
                     </span>
                 </div>
+                {% comment %} timecode {% endcomment %}
                 <div class="col-4 third" id="dashboard">
                     <div>
                         <div id="timecode">
                             <h3>timecode</h3>
-                            [[sortedTimecode]]
+                            <h1>[[sortedTimecode]]</h1>
                         </div>
                     </div>
+                    {% comment %} waevlist {% endcomment %}
                     <div id="waevlist">
                         <h3>waevs</h3>
                             <div v-for="waev in userWaevs">
@@ -28,6 +31,7 @@
                                 </div>
                             </div> 
                     </div>
+                    {% comment %} upload {% endcomment %}
                     <div class="third" id="upload">
                         <div id="upload-content">
                             <h1>new waev</h1>
@@ -53,33 +57,16 @@
                                 </div>
                                 <b>Transcribing Waev. This can take a while...</b>
                             </div>
-                            {% comment %} <div class="large-12 medium-12 small-12 cell">
-                                <input type="file" id="file" ref="file" v-on:change="handleFileUpload()"/>                           
-                                <br>
-                                <br>
-                                <div v-if="isUploading"> 
-                                    <div class="spinner-border" role="status">
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                    <b>Uploading Waev...</b>
-                                </div>
-                                <div v-if="isTranscribing">
-                                    <div class="spinner-border" role="status">
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                    <b>Transcribing Waev. This can take a while...</b>
-                                </div>
-                                <br>
-                                <button class="btn btn-primary" style="background-color: #142850" @click="submitFile()">Submit</button>
-                            </div> {% endcomment %}
                         </div>
                     </div>
                 </div>
             </div>  
         </div>  
     </div>
+        {% comment %} vue and axios cdn scripts {% endcomment %}
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js"></script>
+        {% comment %} Vue app {% endcomment %}
         <script>
             let app = new Vue({
                 el: '#app',
@@ -99,22 +86,23 @@
                         'transcript': null,
                         'user':null,
                     },
+                    editWord: false,
+                    hoverTimecode: '0',
                     isUploading: false,
                     isTranscribing:false,
                     user:"",
                     userWaevs: {},
-                    editWord: false,
-                    hoverTimecode: '0',
                 },
 
                 methods: {
+                    // select waev from waevlist
                     selectWaev(waev){
                         if(this.selectedWaev !== waev){
                             this.selectedWaev=waev
                             this.selectedWaev.transcript=JSON.parse(waev.transcript)
-                            
                         }
                     },
+                    // remove waev from waevlist
                     removeWaev(waev){
                         axios({
                             method: 'delete',
@@ -123,15 +111,14 @@
                         }).then(response=>{
                             this.reloadWaevs()
                         })
-
-
-
                     },
+                    // sets file and filename of upload target
                     handleFileUpload(){
-                        console.log(this.$refs.file.files)
+                        // console.log(this.$refs.file.files)
                         this.newWaev.file = this.$refs.file.files[0]
                         this.newWaev.filename=this.$refs.file.files[0].name
                     },
+                    // submits file to API, then uploads to Google Bucket, then transcribes file
                     submitFile(){
                         this.isUploading = true
                         let formData= new FormData()
@@ -139,7 +126,7 @@
                             'audio', this.newWaev.file)
                         formData.append('user', this.user.id )
                         formData.append('filename', this.newWaev.filename)
-                        console.log(formData)
+                        //to DRF API
                         axios.post('/api/v1/waevs/',
                             formData,
                             {
@@ -149,6 +136,7 @@
                                 },                               
                             }).then(response=>{
                                 this.newWaev.id = response.data.id
+                                //to Bucket via custom view
                                 axios({
                                     method: 'post',
                                     url:'http://localhost:8000/upload/',
@@ -159,6 +147,7 @@
                                 }).then(response =>{
                                     this.isUploading=false
                                     this.isTranscribing=true
+                                    //to google API for transcription
                                     axios({
                                         method: 'post',
                                         url:'http://localhost:8000/transcribe/',
@@ -180,8 +169,8 @@
                                     })
                                 })
                             })
-
                     },
+                    // patch request to DRF API to update transcript
                     updateTranscript(){
                         axios({
                             method: 'patch',
@@ -189,31 +178,26 @@
                             data: {'transcript': JSON.stringify(this.selectedWaev.transcript)},
                             headers:{'X-CSRFToken':this.csrf_token}
                         }).then(response=>{
-                            console.log("Success!")
-                            console.log(response.data)
                             this.reloadWaevs()
                             this.selectedWaev=response.data
                             this.selectedWaev.transcript=JSON.parse(response.data.transcript)
                         }).catch(function(){
                             console.log("Failure")
                         })
-                        
-            
                     },
+                    // toggles whether or not anything on the page is being edited
                     toggleEdit(){
                         this.selectedWaev.transcript=this.selectedWaev.transcript.map(word=>{
                                 word.editWord=false
                                 return word
                         })
-                    
                     },
+                    // toggles whether or not each individual word is being edited
                     toggleWordEdit(word){
                         word.editWord=word.editWord ? false:true
                         this.editWord=true
-                        
-        
                     },
-
+                    // reloads all page information after an update
                     reloadWaevs(){
                         axios({
                         method:"get",
@@ -242,6 +226,7 @@
                     })
                     }
                 },
+                // converts timecode from seconds to HH:MM:SS format in realtime, returns new format to page
                 computed:{
                     sortedTimecode(){
                         let timecode=parseInt(this.hoverTimecode)
@@ -250,15 +235,14 @@
                         let seconds =  timecode % 60
                         let formattedTimecode = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0')
                         return formattedTimecode
-
                     } 
-
                 },
+                // provides csrf token and loads newest information onto page
                 mounted: function(){
                     this.csrf_token=document.querySelector("input[name=csrfmiddlewaretoken]").value
                     this.reloadWaevs()
-
                 },
+                // created window event listener to toggle the text out of edit mode when user hits enter
                 created:function(){
                     window.addEventListener('keyup', event =>{
                         if (this.editWord && event.key === 'Enter'){

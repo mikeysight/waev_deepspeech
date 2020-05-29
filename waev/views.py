@@ -1,36 +1,44 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+
 from google.cloud import storage
 from google.cloud import speech_v1
 from google.cloud.speech_v1 import enums
+
 from .models import AudioFile
 import json
 import sox
 
 def upload(request):
+    # retrieves filename from post request
     data = json.loads(request.body)
     filename = data.get('filename')
-
+    
+    #google upload to bucket parameters
     storage_client = storage.Client()
     bucket = storage_client.bucket('waev')
     blob = bucket.blob(filename+'.flac')
-
     audio=f"/Users/michael/waev/secrets/media/{filename}"
+
+    #convert audio file to mono FLAC, 1600 samplerate to optimize transcription
     tfm=sox.Transformer()
     tfm.convert(samplerate=16000, n_channels=1)
     new_audio=audio+'.flac'
     audio=tfm.build(audio, new_audio)
+
+    #upload file to bucket
     blob.upload_from_filename(new_audio)
     print("file uploaded!")
 
     return HttpResponse()
 
 def transcribe(request):
+    # retrieve filename and file id from post request
     data=json.loads(request.body)
     filename= data.get('filename')
     file_id= data.get('id')
-    print(file_id)
 
+    #google speech-to-text API parameters
     client = speech_v1.SpeechClient()
     sample_rate_hertz = 16000
     language_code = "en-US"
@@ -43,27 +51,26 @@ def transcribe(request):
     }
     storage_uri=f"gs://waev/{filename}.flac"
     audio = {"uri": storage_uri}
+
+    #transcribe audio file
     operation = client.long_running_recognize(config, audio)
-
-    # print(u"Waiting for operation to complete...")
+    print(u"Waiting for operation to complete...")
     response = operation.result()
-    # print(response)
-    
+   
+    #create custom response to save to DB and then send back to front end
     transcription_response=[]
-
     for result in response.results:
         alternative = result.alternatives[0]
         for word in alternative.words:
             word_dict = {'text': f"{word.word}", 'timestamp': f"{word.start_time.seconds}"}
-            # print(word_dict)
             transcription_response.append(word_dict)
-    # print(transcription_response)
+    
     transcript_json = json.dumps(transcription_response)
-    # print(transcript_json)
+
+    #update transcript in database
     audiofile=AudioFile.objects.get(id=file_id)
     audiofile.transcript=transcript_json
     audiofile.save()
-
 
     return HttpResponse(transcript_json)
 
