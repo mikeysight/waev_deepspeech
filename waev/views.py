@@ -20,7 +20,7 @@ def upload(request):
     blob = bucket.blob(filename+'.flac')
     audio=f"/Users/michael/waev/secrets/media/{filename}"
 
-    #convert audio file to mono FLAC, 1600 samplerate to optimize transcription
+    #convert audio file to mono FLAC, 16000 samplerate to optimize transcription
     tfm=sox.Transformer()
     tfm.convert(samplerate=16000, n_channels=1)
     new_audio=audio+'.flac'
