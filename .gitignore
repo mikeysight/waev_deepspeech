@@ -4,7 +4,7 @@ secrets/
 *~
 /.vscode
 __pycache__
-myvenv
+pipenv
 db.sqlite3
 waev/static/
 .DS_Store
