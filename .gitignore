@@ -1,10 +1,2 @@
 test/
 secrets/
-*.pyc
-*~
-/.vscode
-__pycache__
-pipenv
-db.sqlite3
-static/
-.DS_Store
