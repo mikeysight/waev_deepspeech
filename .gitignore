@@ -6,5 +6,5 @@ secrets/
 __pycache__
 pipenv
 db.sqlite3
-waev/static/
+static/
 .DS_Store
