@@ -7,6 +7,8 @@ verify_ssl = true
 
 [packages]
 django-cors-headers = "*"
+rest-framework = "*"
+djangorestframework = "==3.11"
 
 [requires]
 python_version = "3.6"
