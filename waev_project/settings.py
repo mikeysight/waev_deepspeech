@@ -145,7 +145,7 @@ MEDIA_ROOT= "/Users/michael/waev/secrets/media/"
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-LOGIN_REDIRECT_URL = ''
+LOGIN_REDIRECT_URL = 'http://waev.pythonanywhere.com'
 
 LOGIN_URL = 'login'
 
