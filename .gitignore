@@ -1,2 +1,9 @@
 test/
 secrets/
+*.pyc
+*~
+/.vscode
+__pycache__
+db.sqlite3
+/static
+.DS_Store
