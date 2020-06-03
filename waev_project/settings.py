@@ -25,7 +25,7 @@ SECRET_KEY = 'px9)c=)cg23siq1g-s$n4u+ov66*hmym=)0hlbkpxagqmy-keg'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.pythonanywhere.com']
 
 
 # Application definition
@@ -145,8 +145,10 @@ MEDIA_ROOT= "/Users/michael/waev/secrets/media/"
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-LOGIN_REDIRECT_URL = 'http://waev.pythonanywhere.com'
+LOGIN_REDIRECT_URL = 'http://localhost:8000/'
 
 LOGIN_URL = 'login'
+
+GOOGLE_APPLICATION_CREDENTIALS=os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 
