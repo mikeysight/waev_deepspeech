@@ -139,7 +139,7 @@
                                 //to Bucket via custom view
                                 axios({
                                     method: 'post',
-                                    url:'http://localhost:8000/upload/',
+                                    url:'/upload/',
                                     data: {"filename": this.newWaev.filename},
                                     headers:{
                                             'X-CSRFToken': this.csrf_token
@@ -150,7 +150,7 @@
                                     //to google API for transcription
                                     axios({
                                         method: 'post',
-                                        url:'http://localhost:8000/transcribe/',
+                                        url:'/transcribe/',
                                         data: {"filename": this.newWaev.filename,
                                         "id": this.newWaev.id},
                                         headers:{

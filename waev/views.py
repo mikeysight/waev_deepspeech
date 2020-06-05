@@ -8,6 +8,7 @@ from google.cloud.speech_v1 import enums
 from .models import AudioFile
 import json
 import sox
+from django.conf import settings
 
 def upload(request):
     # retrieves filename from post request
@@ -18,7 +19,7 @@ def upload(request):
     storage_client = storage.Client()
     bucket = storage_client.bucket('waev')
     blob = bucket.blob(filename+'.flac')
-    audio=f"/Users/michael/waev/secrets/media/{filename}"
+    audio=f"{settings.MEDIA_ROOT}/{filename}"
 
     #convert audio file to mono FLAC, 16000 samplerate to optimize transcription
     tfm=sox.Transformer()
