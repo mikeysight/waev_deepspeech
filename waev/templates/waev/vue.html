@@ -29,7 +29,7 @@
                                     <p class="waev" @click="selectWaev(waev)">[[waev.filename]] <button @click="removeWaev(waev)">&#xd7</button>
                                     </div>
                                 </div>
-                            </div> 
+                            </div>
                     </div>
                     {% comment %} upload {% endcomment %}
                     <div class="third" id="upload">
@@ -45,7 +45,7 @@
                                 </div>
                             </div>
                             <br>
-                            <div v-if="isUploading"> 
+                            <div v-if="isUploading">
                                 <div class="spinner-border" role="status">
                                     <span class="sr-only">Loading...</span>
                                 </div>
@@ -60,8 +60,8 @@
                         </div>
                     </div>
                 </div>
-            </div>  
-        </div>  
+            </div>
+        </div>
     </div>
         {% comment %} vue and axios cdn scripts {% endcomment %}
         <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -133,29 +133,29 @@
                                headers:{
                                     'Content-Type':'multipart/form-data',
                                     'X-CSRFToken': this.csrf_token
-                                },                               
+                                },
                             }).then(response=>{
                                 this.newWaev.id = response.data.id
                                 //to Bucket via custom view
                                 axios({
                                     method: 'post',
-                                    url:'http://localhost:8000/upload/',
+                                    url:'/upload/',
                                     data: {"filename": this.newWaev.filename},
                                     headers:{
                                             'X-CSRFToken': this.csrf_token
-                                        }   
+                                        }
                                 }).then(response =>{
                                     this.isUploading=false
                                     this.isTranscribing=true
                                     //to google API for transcription
                                     axios({
                                         method: 'post',
-                                        url:'http://localhost:8000/transcribe/',
+                                        url:'/transcribe/',
                                         data: {"filename": this.newWaev.filename,
                                         "id": this.newWaev.id},
                                         headers:{
                                             'X-CSRFToken': this.csrf_token
-                                        }         
+                                        }
                                     }).then(response => {
                                         this.isTranscribing= false
                                         this.transcript=response.data
@@ -220,7 +220,7 @@
                                     'id': null,
                                     'transcript': null,
                                     'user':null,
-                                }   
+                                }
                             }
                         })
                     })
@@ -235,7 +235,7 @@
                         let seconds =  timecode % 60
                         let formattedTimecode = hours.toString().padStart(2, '0') + ':' + minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0')
                         return formattedTimecode
-                    } 
+                    }
                 },
                 // provides csrf token and loads newest information onto page
                 mounted: function(){

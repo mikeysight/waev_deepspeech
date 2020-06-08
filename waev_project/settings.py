@@ -133,15 +133,13 @@ STATIC_URL = '/static/'
 # )
 
 CORS_ORIGIN_ALLOW_ALL=True
-CORS_ORIGIN_WHITELIST=('http://localhost:8000', 'http://127.0.0.1:8000')  
+CORS_ORIGIN_WHITELIST=('http://localhost:8000', 'http://127.0.0.1:8000')
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ]
 }
-
-MEDIA_ROOT= "/Users/michael/waev/secrets/media/"
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
@@ -152,3 +150,7 @@ LOGIN_URL = 'login'
 GOOGLE_APPLICATION_CREDENTIALS=os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
 
 
+
+MEDIA_URL = '/media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
