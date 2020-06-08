@@ -8,10 +8,7 @@ from google.cloud.speech_v1 import enums
 from .models import AudioFile
 import json
 import sox
-<<<<<<< HEAD
 import os
-=======
->>>>>>> 692bc972aa6025b59c3d30f1b504b3d7d562fe16
 from django.conf import settings
 
 def upload(request):
@@ -23,17 +20,13 @@ def upload(request):
     storage_client = storage.Client()
     bucket = storage_client.bucket('waev')
     blob = bucket.blob(filename+'.flac')
-<<<<<<< HEAD
-    audio=f"/home/waev/waev.pythonanywhere.com/media/{filename}"
-=======
     audio=f"{settings.MEDIA_ROOT}/{filename}"
->>>>>>> 692bc972aa6025b59c3d30f1b504b3d7d562fe16
 
     #convert audio file to mono FLAC, 16000 samplerate to optimize transcription
     tfm=sox.Transformer()
     tfm.convert(samplerate=16000, n_channels=1)
     new_audio=audio+'.flac'
-    audio=tfm.build_file(audio, new_audio)
+    audio=tfm.build(audio, new_audio)
 
     #upload file to bucket
     blob.upload_from_filename(new_audio)
