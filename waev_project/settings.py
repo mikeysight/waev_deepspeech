@@ -141,8 +141,6 @@ REST_FRAMEWORK = {
     ]
 }
 
-MEDIA_ROOT= "/Users/michael/waev/secrets/media/"
-
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 LOGIN_REDIRECT_URL = 'home'
