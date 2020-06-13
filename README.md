@@ -1,6 +1,6 @@
 # Waev
 
-###### an audio transcription service.
+###### an audio transcription service for readers and listeners.
 
 ## Project Overview
 Waev is an audio transcription service catered to readers and listeners. It allows users to transcribe audio files into timestamped, editable transcripts that facilitate the cross-referencing of a physical text with its corresponding audiobook dictation.
