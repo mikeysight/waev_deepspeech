@@ -1,10 +1,11 @@
 test/
 secrets/
+media/
 *.pyc
 *~
 /.vscode
 __pycache__
 db.sqlite3
-/static
+static/
 .DS_Store
 waev.md
