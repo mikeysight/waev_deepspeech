@@ -3,7 +3,7 @@
 ###### an audio transcription service.
 
 ## Project Overview
-Waev is a web application that allows a user to upload an audio file to be transcribed and returned in line by line timecoded text format. The user can then request an .XML file of the transcript for external use. The application will be built with Vue with Django Rest Framework and utilize a python speech recognition package called SpeechRecognition, an audio package called FFmpeg, and the pydub audio manipulation module. 
+Waev is an audio transcription service catered to readers and listeners. It allows users to transcribe audio files into timestamped, editable transcripts that facilitate the cross-referencing of a physical text with its corresponding audiobook dictation.
 
 ## Features
 
