@@ -1,7 +1,6 @@
 test/
 secrets/
 media/
-static/
 .DS_Store
 waev_project/.env
 
