@@ -9,7 +9,7 @@ For a live demo, please use the following login info:
 - Username: mikeysight
 - Password: testing1234
 
-Tech Stack: HTML, CSS, Javascript, Vue.js, AXIOS, Python, Django, Django Rest Framework, Google Cloud Platform and Google speech-to-text API.
+Tech Stack: HTML, CSS, Javascript, Vue.js, AXIOS, Python, Django, Django Rest Framework, Mozilla DeepSpeech speech-to-text engine.
 
 
 
