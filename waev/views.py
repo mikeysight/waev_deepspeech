@@ -11,8 +11,9 @@ import sox
 import os
 from django.conf import settings
 
-import argparse
 from deepspeech import Model, version
+import numpy as np
+import wave
 
 def upload(request):
     # retrieves filename from post request
@@ -30,12 +31,14 @@ def upload(request):
     tfm.convert(samplerate=16000, n_channels=1)
     new_audio=f"{settings.MEDIA_ROOT}/test.wav"
     audio=tfm.build(audio, new_audio)
+    fin = wave.open(new_audio, 'rb')
+    audio_buffer = np.frombuffer(fin.readframes(fin.getnframes()), np.int16)
 
     # parser = argparse.ArgumentParser(description='Running DeepSpeech inference.')
     # args = parser.parse_args()
     print(new_audio)
-    ds=Model("/Users/michael/waev_deepspeech/deepspeech-0.7.4-models.pbmm")
-    print(ds.stt(new_audio))
+    ds=Model("deepspeech-0.7.4-models.pbmm")
+    print(ds.stt(audio_buffer))
 
     #upload file to bucket
     # blob.upload_from_filename(new_audio)

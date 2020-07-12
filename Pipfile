@@ -17,6 +17,7 @@ grpcio = "==1.30.0"
 python-dotenv = "==0.13.0"
 deepspeech = "*"
 argparse = "*"
+wave = "*"
 
 [requires]
 python_version = "3.6"
