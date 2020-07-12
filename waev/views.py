@@ -11,26 +11,35 @@ import sox
 import os
 from django.conf import settings
 
+import argparse
+from deepspeech import Model, version
+
 def upload(request):
     # retrieves filename from post request
     data = json.loads(request.body)
     filename = data.get('filename')
 
     #google upload to bucket parameters
-    storage_client = storage.Client()
-    bucket = storage_client.bucket('waev')
-    blob = bucket.blob(filename+'.flac')
+    # storage_client = storage.Client()
+    # bucket = storage_client.bucket('waev')
+    # blob = bucket.blob(filename+'.flac')
     audio=f"{settings.MEDIA_ROOT}/{filename}"
 
     #convert audio file to mono FLAC, 16000 samplerate to optimize transcription
     tfm=sox.Transformer()
     tfm.convert(samplerate=16000, n_channels=1)
-    new_audio=audio+'.flac'
+    new_audio=f"{settings.MEDIA_ROOT}/test.wav"
     audio=tfm.build(audio, new_audio)
 
+    # parser = argparse.ArgumentParser(description='Running DeepSpeech inference.')
+    # args = parser.parse_args()
+    print(new_audio)
+    ds=Model("/Users/michael/waev_deepspeech/deepspeech-0.7.4-models.pbmm")
+    print(ds.stt(new_audio))
+
     #upload file to bucket
-    blob.upload_from_filename(new_audio)
-    print("file uploaded!")
+    # blob.upload_from_filename(new_audio)
+    # print("file uploaded!")
 
     return HttpResponse()
 
